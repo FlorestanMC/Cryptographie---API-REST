@@ -89,6 +89,21 @@ Puis ouvrir http://localhost:8000/docs.
 > ⚠️ Sur le plan gratuit, le service se met en veille après inactivité (premier appel lent)
 > et la base SQLite est réinitialisée à chaque redémarrage / redéploiement.
 
+## Captures d'écran
+
+### Conteneurisation Docker (build, run, `docker ps`)
+![Docker build et run](captures/docker-build-run.png)
+
+### Déploiement Render (service Live, logs)
+![Dashboard Render](captures/render-dashboard.png)
+
+### Documentation Swagger accessible publiquement
+![Swagger sur Render](captures/swagger-render.png)
+
+### Tests Postman sur l'API déployée (18 tests réussis, 0 échec)
+![Postman Runner 1/2](captures/postman-runner-1.png)
+![Postman Runner 2/2](captures/postman-runner-2.png)
+
 ## Structure
 
 ```
@@ -97,6 +112,8 @@ Puis ouvrir http://localhost:8000/docs.
 │   └── main.py          # API FastAPI + accès SQLite
 ├── tests/
 │   └── test_api.py      # Tests pytest
+├── postman/             # Collection Postman
+├── captures/            # Captures d'écran
 ├── Dockerfile
 ├── requirements.txt
 └── README.md
