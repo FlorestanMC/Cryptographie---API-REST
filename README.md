@@ -3,8 +3,10 @@
 Mini-projet *Cloud Computing, Microservices et API* : API REST de gestion des stages
 développée avec **FastAPI** et **SQLite**, conteneurisée avec **Docker** et déployée sur **Render**.
 
-- **URL publique** : `https://<votre-service>.onrender.com` *(à compléter après déploiement)*
-- **Documentation Swagger** : `<URL>/docs`  — ReDoc : `<URL>/redoc`
+- **URL publique** : https://cryptographie-api-rest.onrender.com
+- **Documentation Swagger** : https://cryptographie-api-rest.onrender.com/docs — ReDoc : https://cryptographie-api-rest.onrender.com/redoc
+
+> Plan gratuit Render : après une période d'inactivité, le premier appel peut prendre ~1 minute (réveil du service).
 
 ## Modèle de données
 
@@ -64,7 +66,7 @@ Couvrent : création, liste, consultation, modification, suppression, stage inex
 
 Importer `postman/API-Stages.postman_collection.json` dans Postman, puis lancer la collection
 (**Run collection**). La variable de collection `baseUrl` vaut `http://localhost:8000` ;
-la remplacer par l'URL Render pour tester l'API déployée.
+la remplacer par `https://cryptographie-api-rest.onrender.com` pour tester l'API déployée.
 
 ## Docker
 
@@ -82,7 +84,7 @@ Puis ouvrir http://localhost:8000/docs.
 2. Sur https://render.com : **New → Web Service** → connecter le dépôt.
 3. Environnement : **Docker**, plan : **Free**.
 4. Lancer le déploiement (Render injecte la variable `PORT`, prise en compte par le Dockerfile).
-5. Récupérer l'URL publique `https://<nom>.onrender.com` et tester `/docs`.
+5. Récupérer l'URL publique (ici https://cryptographie-api-rest.onrender.com) et tester `/docs`.
 
 > ⚠️ Sur le plan gratuit, le service se met en veille après inactivité (premier appel lent)
 > et la base SQLite est réinitialisée à chaque redémarrage / redéploiement.
