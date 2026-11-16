@@ -1,0 +1,386 @@
+{
+  "info": {
+    "name": "API Gestion des Stages",
+    "description": "Tests des endpoints de l'API Stages. Ex\u00e9cuter les requ\u00eates dans l'ordre (ou via le Collection Runner). Modifier la variable baseUrl pour cibler local ou Render.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "eb90a7e1-5a3b-473e-a546-384d83722a0d"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000",
+      "type": "string"
+    },
+    {
+      "key": "stageId",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Health check",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "health"
+          ]
+        },
+        "header": []
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+              "pm.test('status = ok', () => pm.expect(pm.response.json().status).to.eql('ok'));"
+            ],
+            "type": "text/javascript",
+            "id": "f6e8372b-348d-4706-b9e8-64d855543b30"
+          }
+        }
+      ],
+      "id": "c5cd27cd-1bf1-45bb-afc7-096f23e54eb7"
+    },
+    {
+      "name": "2. Cr\u00e9er un stage",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/stages",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "stages"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nom_etudiant\": \"Alice Martin\",\n  \"entreprise\": \"Airbus\",\n  \"intitule\": \"D\u00e9veloppeur Backend\",\n  \"date_debut\": \"2026-02-01\",\n  \"date_fin\": \"2026-07-31\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Statut 201', () => pm.response.to.have.status(201));",
+              "const body = pm.response.json();",
+              "pm.test('Un id est renvoy\u00e9', () => pm.expect(body.id).to.be.a('number'));",
+              "pm.test('Donn\u00e9es conformes', () => pm.expect(body.entreprise).to.eql('Airbus'));",
+              "pm.collectionVariables.set('stageId', body.id);"
+            ],
+            "type": "text/javascript",
+            "id": "fb4348f7-5ca8-4f94-928f-2c1ca4a93543"
+          }
+        }
+      ],
+      "id": "24445821-e942-4644-ab40-e732f01bf861"
+    },
+    {
+      "name": "3. Lister les stages",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/stages",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "stages"
+          ]
+        },
+        "header": []
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+              "const id = Number(pm.collectionVariables.get('stageId'));",
+              "pm.test('Le stage cr\u00e9\u00e9 est dans la liste', () => pm.expect(pm.response.json().map(s => s.id)).to.include(id));"
+            ],
+            "type": "text/javascript",
+            "id": "977a99ee-4098-4fee-bb2e-6d80a9507615"
+          }
+        }
+      ],
+      "id": "63d095ed-4b92-450a-b59b-98bcd1f5e105"
+    },
+    {
+      "name": "4. Consulter un stage",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/stages/{{stageId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "stages",
+            "{{stageId}}"
+          ]
+        },
+        "header": []
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+              "pm.test('Bon \u00e9tudiant', () => pm.expect(pm.response.json().nom_etudiant).to.eql('Alice Martin'));"
+            ],
+            "type": "text/javascript",
+            "id": "136a6391-35d6-4257-b4c9-6321232c7624"
+          }
+        }
+      ],
+      "id": "8d373d62-5de8-43f2-9763-36d28651c2c8"
+    },
+    {
+      "name": "5. Modifier un stage",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/stages/{{stageId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "stages",
+            "{{stageId}}"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"entreprise\": \"Thales\",\n  \"intitule\": \"Ing\u00e9nieur Cloud\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Statut 200', () => pm.response.to.have.status(200));",
+              "const b = pm.response.json();",
+              "pm.test('Champs modifi\u00e9s', () => { pm.expect(b.entreprise).to.eql('Thales'); pm.expect(b.intitule).to.eql('Ing\u00e9nieur Cloud'); });",
+              "pm.test('Autres champs inchang\u00e9s', () => pm.expect(b.nom_etudiant).to.eql('Alice Martin'));"
+            ],
+            "type": "text/javascript",
+            "id": "e9a4f20a-283f-4a4b-85c0-b5aedc4d1391"
+          }
+        }
+      ],
+      "id": "5fea0dad-8f12-452c-a54c-2a216a0bd2b5"
+    },
+    {
+      "name": "6. Cr\u00e9er un stage invalide (dates incoh\u00e9rentes)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/stages",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "stages"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nom_etudiant\": \"Bob Durand\",\n  \"entreprise\": \"Orange\",\n  \"intitule\": \"Data Analyst\",\n  \"date_debut\": \"2026-08-01\",\n  \"date_fin\": \"2026-01-01\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Statut 422', () => pm.response.to.have.status(422));"
+            ],
+            "type": "text/javascript",
+            "id": "86039f68-43af-4d3a-8401-455b4dc18831"
+          }
+        }
+      ],
+      "id": "20b2531a-700d-40f1-8c41-f89edc040587"
+    },
+    {
+      "name": "7. Supprimer un stage",
+      "request": {
+        "method": "DELETE",
+        "url": {
+          "raw": "{{baseUrl}}/stages/{{stageId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "stages",
+            "{{stageId}}"
+          ]
+        },
+        "header": []
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Statut 204', () => pm.response.to.have.status(204));"
+            ],
+            "type": "text/javascript",
+            "id": "fa680f6e-616d-4fdd-8983-59be3bbb29ee"
+          }
+        }
+      ],
+      "id": "a8bb218b-6d9a-4fcc-8a3a-c3575fcc126a"
+    },
+    {
+      "name": "8. Consulter un stage inexistant",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{baseUrl}}/stages/{{stageId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "stages",
+            "{{stageId}}"
+          ]
+        },
+        "header": []
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Statut 404', () => pm.response.to.have.status(404));",
+              "pm.test('Message explicite', () => pm.expect(pm.response.json().detail).to.include('introuvable'));"
+            ],
+            "type": "text/javascript",
+            "id": "2e3d2dfc-c1fa-4c3b-b262-93e20bfce3cd"
+          }
+        }
+      ],
+      "id": "ab92b1af-b403-4dc8-a75b-447008dd86b7"
+    },
+    {
+      "name": "9. Modifier un stage inexistant",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/stages/99999",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "stages",
+            "99999"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"entreprise\": \"Inconnue\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Statut 404', () => pm.response.to.have.status(404));"
+            ],
+            "type": "text/javascript",
+            "id": "793e4ce8-428f-4755-9f5c-de1cc9550b96"
+          }
+        }
+      ],
+      "id": "85383060-d26f-476b-b96d-30c08481d9b9"
+    },
+    {
+      "name": "10. Supprimer un stage inexistant",
+      "request": {
+        "method": "DELETE",
+        "url": {
+          "raw": "{{baseUrl}}/stages/99999",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "stages",
+            "99999"
+          ]
+        },
+        "header": []
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Statut 404', () => pm.response.to.have.status(404));"
+            ],
+            "type": "text/javascript",
+            "id": "afec1649-7b17-436b-bf17-903c6f02883a"
+          }
+        }
+      ],
+      "id": "18e39bcf-2448-4499-a3bf-e6c491c76e36"
+    }
+  ]
+}
