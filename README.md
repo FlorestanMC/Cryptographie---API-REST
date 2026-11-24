@@ -36,29 +36,58 @@ développée avec **FastAPI** et **SQLite**, conteneurisée avec **Docker** et d
 
 ### Exemple de requête
 
+Le plus simple, sur tous les systèmes : ouvrir le Swagger (`/docs`) et utiliser **Try it out**.
+
+Linux / macOS (bash) :
+
 ```bash
 curl -X POST http://localhost:8000/stages \
   -H "Content-Type: application/json" \
   -d '{"nom_etudiant":"Alice Martin","entreprise":"Airbus","intitule":"Développeur Backend","date_debut":"2026-02-01","date_fin":"2026-07-31"}'
 ```
 
+Windows (PowerShell) — `curl` y est un alias d'une autre commande, on utilise donc `Invoke-RestMethod` :
+
+```powershell
+Invoke-RestMethod -Method Post -Uri http://localhost:8000/stages -ContentType "application/json" -Body '{"nom_etudiant":"Alice Martin","entreprise":"Airbus","intitule":"Developpeur Backend","date_debut":"2026-02-01","date_fin":"2026-07-31"}'
+```
+
 ## Lancer en local
 
+Prérequis : **Python 3.10 à 3.14** (testé avec 3.12 et 3.14).
+
+Linux / macOS :
+
 ```bash
-python -m venv .venv
-source .venv/bin/activate        # Windows : .venv\Scripts\activate
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
+
+Windows (PowerShell) :
+
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+uvicorn app.main:app --reload
+```
+
+> Si PowerShell refuse d'exécuter `Activate.ps1` (« l'exécution de scripts est désactivée »),
+> lancer d'abord `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass` (valable pour la fenêtre en cours uniquement).
 
 Swagger : http://localhost:8000/docs
 
 ### Tests automatisés
 
 ```bash
-pip install pytest httpx
+pip install -r requirements-dev.txt
 pytest -q
 ```
+
+Le fichier `pytest.ini` ajoute la racine du projet au chemin Python : `pytest -q` fonctionne directement,
+sans erreur `No module named 'app'`.
 
 Couvrent : création, liste, consultation, modification, suppression, stage inexistant (404) et validation (422).
 
@@ -73,10 +102,19 @@ la remplacer par `https://cryptographie-api-rest.onrender.com` pour tester l'API
 ```bash
 docker build -t api-stages .
 docker run -d -p 8000:8000 --name api-stages api-stages
-curl http://localhost:8000/health
 ```
 
-Puis ouvrir http://localhost:8000/docs.
+Puis ouvrir http://localhost:8000/health et http://localhost:8000/docs dans un navigateur.
+
+Pour relancer après une modification, supprimer d'abord l'ancien conteneur (sinon `docker run` échoue car le nom `api-stages` est déjà pris) :
+
+```bash
+docker rm -f api-stages
+docker build -t api-stages .
+docker run -d -p 8000:8000 --name api-stages api-stages
+```
+
+Pour simplement redémarrer un conteneur arrêté (ex. après un redémarrage de Docker Desktop) : `docker start api-stages`.
 
 ## Déploiement sur Render
 
@@ -115,6 +153,8 @@ Puis ouvrir http://localhost:8000/docs.
 ├── postman/             # Collection Postman
 ├── captures/            # Captures d'écran
 ├── Dockerfile
-├── requirements.txt
+├── pytest.ini
+├── requirements.txt     # Dépendances de l'API
+├── requirements-dev.txt # + pytest, httpx pour les tests
 └── README.md
 ```
